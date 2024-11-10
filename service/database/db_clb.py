@@ -1,4 +1,4 @@
-import certifi
+import certifi,json
 from bson import ObjectId
 from pymongo import MongoClient
 from bson import ObjectId  # Đảm bảo đã import ObjectId
@@ -25,6 +25,25 @@ def find_clb(clb_id):
         return None  # Nếu có lỗi xảy ra
     
 
+
+def get_user_join_clb(clb_id):
+    try:
+        # Tìm tất cả các user có clb_id chứa ObjectId của clb_id
+        users = collection_user.find({'clb_id': ObjectId(clb_id)}, {'user': 1, 'email': 1, 'phone': 1, 'mssv': 1, 'lop': 1})
+        
+        # Chuyển đổi kết quả thành danh sách và thay đổi ObjectId thành chuỗi nếu cần
+        user_list = []
+        for user in users:
+            user['_id'] = str(user['_id'])  # Chuyển đổi ObjectId của _id thành chuỗi nếu muốn giữ _id, có thể bỏ dòng này nếu không cần
+            user_list.append(user)
+            
+        return user_list  # Trả về danh sách các user với trường cần thiết
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+
+    
 def add_clb(clb_name,leader_id,date,des):
     data_clb = {"name": clb_name, "leader_id":leader_id, "date":date,"des": des}
     collection_clb.insert_one(data_clb)
@@ -77,7 +96,7 @@ def update_clb(clb_id, clb_name, leader_id,member_id, des):
 
 
 
-def update_event_to_user(mssv, clb_ids):
+def update_clb_to_user(mssv, clb_ids):
     # Kiểm tra event_ids có phải là danh sách không
     if isinstance(clb_ids, list):
         # Chuyển đổi tất cả các giá trị trong event_ids thành ObjectId nếu chưa phải ObjectId
