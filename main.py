@@ -41,7 +41,9 @@ def login():
         req_pwd = data_request.get('pwd')
         if login_check(req_user,req_pwd):
             session['username'] = req_user
-            jwt_token = create_jwt(req_user)
+            data = find_user(req_user)
+            print(data)
+            jwt_token = create_jwt(data)
             return jsonify({"noti": "login success!","token":jwt_token}), 200
         return jsonify({"error": "incorrect username or password!"}), 401
     return jsonify({"error": "Method not allowed"}), 405
