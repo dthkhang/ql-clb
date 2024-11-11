@@ -26,10 +26,11 @@ def register():
         req_addr = data_request.get('addr')
         req_mssv = data_request.get('mssv')
         req_lop = data_request.get('lop')
+        req_clb_id = data_request.get('clb_id')
         role = 0
         if find_user(req_user):
             return jsonify({"error": "username already exists!"}), 409
-        add_user(req_user,req_pwd,req_email,req_phone,req_addr,role,req_mssv,req_lop)
+        add_user(req_user,req_pwd,req_email,req_phone,req_addr,role,req_mssv,req_lop,req_clb_id)
         return jsonify({"noti": "success!"}), 200
     return jsonify({"error": "Method not allowed"}), 405
 

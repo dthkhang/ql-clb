@@ -27,7 +27,7 @@ def find_user_id(id):
     
 
     
-def add_user(user,pwd,role,email,phone,addr,mssv,lop):
+def add_user(user,pwd,role,email,phone,addr,mssv,lop,req_clb_id):
     data_user = {
         "user": user, 
         "pwd": pwd, 
@@ -36,7 +36,8 @@ def add_user(user,pwd,role,email,phone,addr,mssv,lop):
         "role": addr,
         "email":role,
         "mssv":mssv,
-        "lop":lop
+        "lop":lop,
+        "clb_id":req_clb_id
     }
     collection.insert_one(data_user)
 
