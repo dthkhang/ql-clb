@@ -2,8 +2,8 @@ from flask import Flask, request, redirect, render_template, session, url_for, j
 from flask_pymongo import PyMongo
 from werkzeug.security import generate_password_hash, check_password_hash
 from service.database.db_user import find_user,add_user, update_user, update_event_to_user, find_user_id
-from service.database.db_event import update_event,find_event, add_event, get_user_join_event
-from service.database.db_clb import update_clb,find_clb, add_clb,update_clb_to_user, get_user_join_clb
+from service.database.db_event import update_event,find_event, add_event, get_user_join_event, get_event
+from service.database.db_clb import update_clb,find_clb, add_clb,update_clb_to_user, get_user_join_clb, get_clb
 from service.authen import login_check
 from service.jwt.jwt_service import create_jwt,check_jwt
 from flask_cors import CORS
@@ -42,7 +42,6 @@ def login():
         if login_check(req_user,req_pwd):
             session['username'] = req_user
             data = find_user(req_user)
-            print(data)
             jwt_token = create_jwt(data)
             return jsonify({"noti": "login success!","token":jwt_token}), 200
         return jsonify({"error": "incorrect username or password!"}), 401
@@ -141,6 +140,13 @@ def get_event_member():
         return jsonify(data),200
     return jsonify({"error": "Method not allowed"}), 405
 
+@app.route('/api/get/event', methods=['GET'])
+def api_get_event():
+    if request.method == 'GET':
+        data = get_event()
+        return jsonify(data),200
+    return jsonify({"error": "Method not allowed"}), 405
+
 #############################################################################################################################
 @app.route('/api/add/clb', methods=['POST'])
 def api_add_clb():
@@ -192,6 +198,14 @@ def get_clb_member():
         data_request = request.json
         req_clb_id = data_request.get('clb_id')
         data = get_user_join_clb(req_clb_id)
+        return jsonify(data),200
+    return jsonify({"error": "Method not allowed"}), 405
+
+@app.route('/api/get/clb', methods=['GET'])
+def api_get_clb():
+    if request.method == 'GET':
+        data = get_clb()
+        print(data)
         return jsonify(data),200
     return jsonify({"error": "Method not allowed"}), 405
 

@@ -12,8 +12,24 @@ collection_event = connection['itskdvn']['event']
 
 
 def get_event():
+    # Lấy dữ liệu từ MongoDB
     data = list(collection_event.find({}))
+
+    # Duyệt qua từng document trong data và chuyển ObjectId thành chuỗi
+    for item in data:
+        for key, value in item.items():
+            # Nếu là ObjectId, chuyển sang chuỗi
+            if isinstance(value, ObjectId):
+                item[key] = str(value)
+            # Nếu là danh sách, kiểm tra và chuyển từng phần tử nếu là ObjectId
+            elif isinstance(value, list):
+                item[key] = [str(v) if isinstance(v, ObjectId) else v for v in value]
+            # Nếu là từ điển lồng nhau, duyệt và chuyển ObjectId thành chuỗi
+            elif isinstance(value, dict):
+                item[key] = {k: str(v) if isinstance(v, ObjectId) else v for k, v in value.items()}
+    
     return data
+
 
 def get_user_join_event(event_id):
     event = collection_event.find_one({'_id': ObjectId(event_id)})

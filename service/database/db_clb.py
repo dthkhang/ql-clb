@@ -9,8 +9,14 @@ connection = MongoClient(url,tlsCAFile=ca)
 collection_user = connection['itskdvn']['user']
 collection_clb = connection['itskdvn']['clb']
 
-def get_event():
+def get_clb():
+    # Lấy dữ liệu từ MongoDB và chuyển đổi ObjectId thành chuỗi
     data = list(collection_clb.find({}))
+    for item in data:
+        if '_id' in item and isinstance(item['_id'], ObjectId):
+            item['_id'] = str(item['_id'])
+        if 'leader_id' in item and isinstance(item['leader_id'], ObjectId):
+            item['leader_id'] = str(item['leader_id'])
     return data
 
 def find_clb(clb_id):
