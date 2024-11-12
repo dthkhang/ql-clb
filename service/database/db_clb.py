@@ -64,19 +64,20 @@ def find_clb(clb_id):
 
 def get_user_join_clb(clb_id):
     try:
-        # Tìm tất cả các user có clb_id chứa ObjectId của clb_id
-        users = collection_user.find({'clb_id': ObjectId(clb_id)}, {'user': 1, 'email': 1, 'phone': 1, 'mssv': 1, 'lop': 1})
+        # Tìm tất cả các user có clb_id chứa chuỗi clb_id
+        users = collection_user.find({'clb_id': clb_id}, {'user': 1, 'email': 1, 'phone': 1, 'mssv': 1, 'lop': 1})
         
         # Chuyển đổi kết quả thành danh sách và thay đổi ObjectId thành chuỗi nếu cần
         user_list = []
         for user in users:
-            user['_id'] = str(user['_id'])  # Chuyển đổi ObjectId của _id thành chuỗi nếu muốn giữ _id, có thể bỏ dòng này nếu không cần
+            user['_id'] = str(user['_id'])  # Chuyển đổi ObjectId của _id thành chuỗi nếu muốn giữ _id
             user_list.append(user)
-            
+        
         return user_list  # Trả về danh sách các user với trường cần thiết
     except Exception as e:
         print(f"Error: {e}")
         return None
+
 
 
     
