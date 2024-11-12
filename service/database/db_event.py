@@ -30,7 +30,33 @@ def get_event():
     
     return data
 
+def delete_event_by_id(event_id):
+    # Kiểm tra nếu event_id là một ObjectId hợp lệ
+    if not ObjectId.is_valid(event_id):
+        return {"error": "Invalid ID format"}
+    
+    # Kiểm tra xem event có tồn tại hay không
+    event_object_id = ObjectId(event_id)
+    event = collection_event.find_one({"_id": event_object_id})
 
+    if event is None:
+        return {"error": "Event not found"}
+    
+    # Kiểm tra nếu có participants và xử lý trường hợp participants là None hoặc danh sách rỗng
+    participants = event.get("participants", None)
+    if participants is None:
+        return {"error": "No participants found"}
+    elif len(participants) == 0:
+        return {"error": "No participants found"}
+    
+    # Xóa sự kiện khỏi MongoDB
+    result = collection_event.delete_one({"_id": event_object_id})
+    
+    if result.deleted_count > 0:
+        return {"message": "Event deleted successfully"}
+    else:
+        return {"error": "Event could not be deleted"}
+    
 def get_user_join_event(event_id):
     event = collection_event.find_one({'_id': ObjectId(event_id)})
     try:

@@ -19,6 +19,36 @@ def get_clb():
             item['leader_id'] = str(item['leader_id'])
     return data
 
+
+def delete_clb_by_id(clb_id):
+    # Kiểm tra nếu event_id là một ObjectId hợp lệ
+    if not ObjectId.is_valid(clb_id):
+        return {"error": "Invalid ID format"}
+    
+    # Kiểm tra xem event có tồn tại hay không
+    clb_object_id = ObjectId(clb_id)
+    clb = collection_clb.find_one({"_id": clb_object_id})
+    print(clb)
+    result = collection_clb.delete_one({"_id": clb_object_id})
+    if clb is None:
+        return {"error": "CLB not found"}
+    
+    # Kiểm tra nếu có participants và xử lý trường hợp participants là None hoặc danh sách rỗng
+    participants = clb.get("participants", None)
+    if participants is None:
+        return {"error": "No participants found"}
+    elif len(participants) == 0:
+        return {"error": "No participants found"}
+    
+    # Xóa sự kiện khỏi MongoDB
+    result = collection_clb.delete_one({"_id": clb_object_id})
+    
+    if result.deleted_count > 0:
+        return {"message": "Event deleted successfully"}
+    else:
+        return {"error": "Event could not be deleted"}
+    
+
 def find_clb(clb_id):
     try:
         clb = collection_clb.find_one({'_id': ObjectId(clb_id)})

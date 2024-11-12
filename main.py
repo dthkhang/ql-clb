@@ -2,8 +2,8 @@ from flask import Flask, request, redirect, render_template, session, url_for, j
 from flask_pymongo import PyMongo
 from werkzeug.security import generate_password_hash, check_password_hash
 from service.database.db_user import find_user,add_user, update_user, update_event_to_user, find_user_id
-from service.database.db_event import update_event,find_event, add_event, get_user_join_event, get_event
-from service.database.db_clb import update_clb,find_clb, add_clb,update_clb_to_user, get_user_join_clb, get_clb
+from service.database.db_event import update_event,find_event, add_event, get_user_join_event, get_event,delete_event_by_id
+from service.database.db_clb import update_clb,find_clb, add_clb,update_clb_to_user, get_user_join_clb, get_clb, delete_clb_by_id
 from service.authen import login_check
 from service.jwt.jwt_service import create_jwt,check_jwt
 from flask_cors import CORS
@@ -148,6 +148,15 @@ def api_get_event():
         return jsonify(data),200
     return jsonify({"error": "Method not allowed"}), 405
 
+@app.route('/api/delete/event', methods=['POST'])
+def delete_event_member():
+    if request.method == 'POST':
+        data_request = request.json
+        req_event_id = data_request.get('event_id')
+        delete_event_by_id(req_event_id)
+        return jsonify({"noti": "update success!"}), 200
+    return jsonify({"error": "Method not allowed"}), 405
+
 #############################################################################################################################
 @app.route('/api/add/clb', methods=['POST'])
 def api_add_clb():
@@ -208,6 +217,15 @@ def api_get_clb():
         data = get_clb()
         print(data)
         return jsonify(data),200
+    return jsonify({"error": "Method not allowed"}), 405
+
+@app.route('/api/delete/clb', methods=['POST'])
+def delete_clb_member():
+    if request.method == 'POST':
+        data_request = request.json
+        req_event_id = data_request.get('clb_id')
+        delete_clb_by_id(req_event_id)
+        return jsonify({"noti": "update success!"}), 200
     return jsonify({"error": "Method not allowed"}), 405
 
 
