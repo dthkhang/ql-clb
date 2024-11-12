@@ -186,10 +186,10 @@ def api_add_clb():
 def api_add_member_clb():
     if request.method == 'POST':
         data_request = request.json
-        try:
-            jwt_header = request.headers['Token']
-            check_token = check_jwt(jwt_header)
-            if check_token["valid"]:
+        # try:
+        jwt_header = request.headers['Token']
+        check_token = check_jwt(jwt_header)
+        if check_token["valid"]:
                 jwt_user = check_token["data"]["user"] # Lấy ra "user" từ "data"
                 if find_user(jwt_user):
                     req_mssv = data_request.get('mssv')
@@ -197,9 +197,9 @@ def api_add_member_clb():
                     update_clb_to_user(req_mssv,req_clb_id)
                     return jsonify({"noti": "update success!"}), 200
                 else: return jsonify({"noti": "error!"}), 403
-            else:
+        else:
                 return jsonify({"error": "you need jwt token for do thisx!"}), 401
-        except: return jsonify({"error": "you need jwt token for do thisy!"}), 401
+        # except: return jsonify({"error": "you need jwt token for do thisy!"}), 401
     return jsonify({"error": "Method not allowed"}), 405
 
 @app.route('/api/get/clb/member', methods=['POST'])

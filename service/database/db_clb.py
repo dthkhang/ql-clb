@@ -72,7 +72,6 @@ def get_user_join_clb(clb_id):
         for user in users:
             user['_id'] = str(user['_id'])  # Chuyển đổi ObjectId của _id thành chuỗi nếu muốn giữ _id
             user_list.append(user)
-        
         return user_list  # Trả về danh sách các user với trường cần thiết
     except Exception as e:
         print(f"Error: {e}")
@@ -80,11 +79,9 @@ def get_user_join_clb(clb_id):
 
 
 
-    
 def add_clb(clb_name,leader_id,date,des):
     data_clb = {"name": clb_name, "leader_id":leader_id, "date":date,"des": des}
     collection_clb.insert_one(data_clb)
-
 
 
 
@@ -133,22 +130,39 @@ def update_clb(clb_id, clb_name, leader_id,member_id, des):
 
 
 
-def update_clb_to_user(mssv, clb_ids):
-    # Kiểm tra event_ids có phải là danh sách không
-    if isinstance(clb_ids, list):
-        # Chuyển đổi tất cả các giá trị trong event_ids thành ObjectId nếu chưa phải ObjectId
-        clb_ids = [ObjectId(clb_ids) if not isinstance(clb_ids, ObjectId) else clb_ids for clb_ids in clb_ids]
-        # Cập nhật user với các event_id mới
-        result = collection_user.update_one(
-            {'mssv': mssv},  # Điều kiện tìm kiếm: user
-            {'$addToSet': {'clb_id': {'$each': clb_ids}}}  # Thêm các event_id mà không trùng lặp
-        )
-        
-        if result.modified_count > 0:
-            return {"status": "success", "message": "Event IDs added successfully."}
+def update_clb_to_user(mssv, clb_id):
+    try:
+        # Kiểm tra nếu clb_id là chuỗi, nếu không, không làm gì
+        if isinstance(clb_id, str):
+            # Tìm người dùng theo mssv
+            user = collection_user.find_one({'mssv': mssv})
+
+            if user:
+                # Kiểm tra nếu clb_id hiện tại là chuỗi
+                current_clb_id = user.get('clb_id', "")
+
+                # Nối chuỗi mới vào clb_id hiện tại (nếu có) với dấu phân cách
+                if current_clb_id:
+                    updated_clb_id = current_clb_id + "," + clb_id  # Nối với dấu ',' giữa các ID
+                else:
+                    updated_clb_id = clb_id  # Nếu không có clb_id trước đó, chỉ thêm clb_id mới
+
+                # Cập nhật clb_id mới vào user
+                result = collection_user.update_one(
+                    {'mssv': mssv},  # Điều kiện tìm kiếm: user với mssv
+                    {'$set': {'clb_id': updated_clb_id}}  # Cập nhật lại clb_id với giá trị nối mới
+                )
+
+                if result.modified_count > 0:
+                    return {"status": "success", "message": "CLB ID added successfully."}
+                else:
+                    return {"status": "error", "message": "No updates made."}
+            else:
+                return {"status": "error", "message": "User not found."}
         else:
-            return {"status": "error", "message": "No updates made."}
-    else:
-        return {"status": "error", "message": "event_ids must be a list."}
+            return {"status": "error", "message": "CLB ID must be a string."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 
 
