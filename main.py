@@ -1,7 +1,7 @@
 from flask import Flask, request, redirect, render_template, session, url_for, jsonify
 from flask_pymongo import PyMongo
 from werkzeug.security import generate_password_hash, check_password_hash
-from service.database.db_user import find_user,add_user, update_user, update_event_to_user, find_user_id
+from service.database.db_user import find_user,add_user, update_user, update_event_to_user, find_user_id, get_data_user
 from service.database.db_event import update_event,find_event, add_event, get_user_join_event, get_event,delete_event_by_id
 from service.database.db_clb import update_clb,find_clb, add_clb,update_clb_to_user, get_user_join_clb, get_clb, delete_clb_by_id
 from service.authen import login_check
@@ -72,6 +72,13 @@ def api_update_user():
                     return jsonify({"error": "you need jwt token for do this-1!"}), 401
         except: return jsonify({"error": "you need jwt token for do this-2!"}), 401
     return jsonify({"error": "Method not allowed"}), 401
+
+@app.route('/api/get/user', methods=['GET'])
+def get_user():
+    if request.method == 'GET':
+        data = get_data_user()
+        return jsonify(data),200
+    return jsonify({"error": "Method not allowed"}), 405
 
 #######################################################################################################################################
 

@@ -12,6 +12,19 @@ def find_user(user):
     data = list(collection.find({'user':user}))
     return data
 
+def get_data_user():
+    # Thêm điều kiện clb_id: "" và loại bỏ trường pwd
+    data = list(collection.find(
+        {'role': 0, 'clb_id': ""},  # Điều kiện lọc
+        {'pwd': 0}  # Loại bỏ trường pwd
+    ))
+
+    # Chuyển đổi ObjectId sang chuỗi
+    for item in data:
+        if '_id' in item:
+            item['_id'] = str(item['_id'])
+    
+    return data
 def find_user_id(id):
     try:
         if isinstance(id, str):
