@@ -3,7 +3,7 @@ from flask_pymongo import PyMongo
 from werkzeug.security import generate_password_hash, check_password_hash
 from service.database.db_user import find_user,add_user, update_user, update_event_to_user, find_user_id, get_data_user
 from service.database.db_event import update_event,find_event, add_event, get_user_join_event, get_event,delete_event_by_id
-from service.database.db_clb import update_clb,find_clb, add_clb,update_clb_to_user, get_user_join_clb, get_clb, delete_clb_by_id
+from service.database.db_clb import update_clb,find_clb, add_clb,update_clb_to_user, get_user_join_clb, get_clb, delete_clb_by_id, delete_clb_to_user
 from service.authen import login_check
 from service.jwt.jwt_service import create_jwt,check_jwt
 from flask_cors import CORS
@@ -193,20 +193,41 @@ def api_add_clb():
 def api_add_member_clb():
     if request.method == 'POST':
         data_request = request.json
-        # try:
-        jwt_header = request.headers['Token']
-        check_token = check_jwt(jwt_header)
-        if check_token["valid"]:
-                jwt_user = check_token["data"]["user"] # Lấy ra "user" từ "data"
-                if find_user(jwt_user):
-                    req_mssv = data_request.get('mssv')
-                    req_clb_id = data_request.get('clb_id')
-                    update_clb_to_user(req_mssv,req_clb_id)
-                    return jsonify({"noti": "update success!"}), 200
-                else: return jsonify({"noti": "error!"}), 403
-        else:
-                return jsonify({"error": "you need jwt token for do thisx!"}), 401
-        # except: return jsonify({"error": "you need jwt token for do thisy!"}), 401
+        try:
+            jwt_header = request.headers['Token']
+            check_token = check_jwt(jwt_header)
+            if check_token["valid"]:
+                    jwt_user = check_token["data"]["user"] # Lấy ra "user" từ "data"
+                    if find_user(jwt_user):
+                        req_mssv = data_request.get('mssv')
+                        req_clb_id = data_request.get('clb_id')
+                        update_clb_to_user(req_mssv,req_clb_id)
+                        return jsonify({"noti": "update success!"}), 200
+                    else: return jsonify({"noti": "error!"}), 403
+            else:
+                    return jsonify({"error": "you need jwt token for do thisx!"}), 401
+        except: return jsonify({"error": "you need jwt token for do thisy!"}), 401
+    return jsonify({"error": "Method not allowed"}), 405
+
+
+@app.route('/api/delete/clb/member', methods=['POST'])
+def api_delete_member_clb():
+    if request.method == 'POST':
+        data_request = request.json
+        try:
+            jwt_header = request.headers['Token']
+            check_token = check_jwt(jwt_header)
+            if check_token["valid"]:
+                    jwt_user = check_token["data"]["user"] # Lấy ra "user" từ "data"
+                    if find_user(jwt_user):
+                        req_mssv = data_request.get('mssv')
+                        req_clb_id = data_request.get('clb_id')
+                        delete_clb_to_user(req_mssv,req_clb_id)
+                        return jsonify({"noti": "update success!"}), 200
+                    else: return jsonify({"noti": "error!"}), 403
+            else:
+                    return jsonify({"error": "you need jwt token for do thisx!"}), 401
+        except: return jsonify({"error": "you need jwt token for do thisy!"}), 401
     return jsonify({"error": "Method not allowed"}), 405
 
 @app.route('/api/get/clb/member', methods=['POST'])

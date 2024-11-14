@@ -165,4 +165,30 @@ def update_clb_to_user(mssv, clb_id):
         return {"status": "error", "message": str(e)}
 
 
+def delete_clb_to_user(mssv, clb_id):
+    try:
+        # Kiểm tra nếu clb_id là chuỗi, nếu không, không làm gì
+        if isinstance(clb_id, str):
+            # Tìm người dùng theo mssv
+            user = collection_user.find_one({'mssv': mssv})
+
+            if user:
+                # Cập nhật clb_id thành chuỗi rỗng
+                result = collection_user.update_one(
+                    {'mssv': mssv},  # Điều kiện tìm kiếm: user với mssv
+                    {'$set': {'clb_id': ''}}  # Cập nhật clb_id thành chuỗi rỗng
+                )
+
+                if result.modified_count > 0:
+                    return {"status": "success", "message": "CLB ID updated successfully."}
+                else:
+                    return {"status": "error", "message": "No updates made."}
+            else:
+                return {"status": "error", "message": "User not found."}
+        else:
+            return {"status": "error", "message": "CLB ID must be a string."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
+
 
