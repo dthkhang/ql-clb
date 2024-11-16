@@ -1,5 +1,5 @@
 import certifi
-from bson import ObjectId
+from bson import ObjectId, json_util
 
 from pymongo import MongoClient
 ca = certifi.where()
@@ -19,12 +19,20 @@ def get_data_user():
         {'pwd': 0}  # Loại bỏ trường pwd
     ))
 
-    # Chuyển đổi ObjectId sang chuỗi
+    # Chuyển đổi ObjectId và xử lý mảng event_id
     for item in data:
+        # Chuyển đổi _id từ ObjectId sang chuỗi
         if '_id' in item:
             item['_id'] = str(item['_id'])
-    
+
+        # Kiểm tra và xử lý nếu event_id tồn tại và là danh sách
+        if 'event_id' in item and isinstance(item['event_id'], list):
+            item['event_id'] = [str(e_id) for e_id in item['event_id']]
+
     return data
+
+
+
 def find_user_id(id):
     try:
         if isinstance(id, str):
