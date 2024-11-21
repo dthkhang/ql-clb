@@ -189,7 +189,7 @@ def delete_clb_to_user(mssv, clb_id):
                 # Cập nhật clb_id thành chuỗi rỗng
                 result = collection_user.update_one(
                     {'mssv': mssv},  # Điều kiện tìm kiếm: user với mssv
-                    {'$set': {'clb_id': ''}}  # Cập nhật clb_id thành chuỗi rỗng
+                    {'$set': {'clb_id': ''},'$unset': {'join_clb_at': ''}}  # Cập nhật clb_id thành chuỗi rỗng
                 )
 
                 if result.modified_count > 0:
