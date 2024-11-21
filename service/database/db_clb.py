@@ -1,4 +1,4 @@
-import certifi,json
+import certifi,json, datetime
 from bson import ObjectId
 from pymongo import MongoClient
 from bson import ObjectId  # Đảm bảo đã import ObjectId
@@ -152,6 +152,7 @@ def update_clb_to_user(mssv, clb_id):
             if user:
                 # Kiểm tra nếu clb_id hiện tại là chuỗi
                 current_clb_id = user.get('clb_id', "")
+                creat_at = datetime.datetime.now()
 
                 # Nối chuỗi mới vào clb_id hiện tại (nếu có) với dấu phân cách
                 if current_clb_id:
@@ -162,7 +163,7 @@ def update_clb_to_user(mssv, clb_id):
                 # Cập nhật clb_id mới vào user
                 result = collection_user.update_one(
                     {'mssv': mssv},  # Điều kiện tìm kiếm: user với mssv
-                    {'$set': {'clb_id': updated_clb_id}}  # Cập nhật lại clb_id với giá trị nối mới
+                    {'$set': {'clb_id': updated_clb_id,'join_clb_at':creat_at}}  # Cập nhật lại clb_id với giá trị nối mới
                 )
 
                 if result.modified_count > 0:
