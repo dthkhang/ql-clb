@@ -67,7 +67,7 @@ def get_user_join_clb(clb_id):
         # Tìm tất cả các user có clb_id khớp
         users = collection_user.find(
             {'clb_id': clb_id},
-            {'user': 1, 'email': 1, 'phone': 1, 'mssv': 1, 'lop': 1, 'event_id': 1}
+            {'user': 1, 'email': 1, 'phone': 1, 'mssv': 1, 'lop': 1, 'event_id': 1,'join_clb_at':1}
         )
         
         # Chuyển đổi kết quả thành danh sách và thay đổi ObjectId thành chuỗi
